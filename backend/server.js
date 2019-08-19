@@ -8,10 +8,9 @@ const webhookRoutes = require('./src/controllers/webhook.controller');
 
 const port = process.env.PORT || 3000;
 
-mongoose.connect('mongodb://localhost/noticiasdb', { useNewUrlParser: true })
+mongoose.connect("mongodb+srv://admin:admin@cluster0-gxavb.mongodb.net/test?retryWrites=true&w=majority", { useNewUrlParser: true })
   .then(() => console.log('Connected to database...'))
   .catch(err => console.error(err));
-
 
 const app = express();
 app.use(express.json());
