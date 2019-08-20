@@ -4,9 +4,6 @@ const request = require('request');
 const Noticia = require('../models/noticia.model.js');
 const router = express.Router();
 
-const defaultImg = "http://saveabandonedbabies.org/wp-content/uploads/2015/08/default.png";
-const defaultUrl = "https://google.com";
-
 // Webhook validation
 router.get('/', function(req, res) {
   console.log("ENV: " , process.env.VERIFY_TOKEN);
@@ -24,8 +21,6 @@ router.get('/', function(req, res) {
   
 // Message processing
 router.post('/', function (req, res) {
-  console.log("ENV: " , process.env.VERIFY_TOKEN);
-  console.log(req.body);
   var data = req.body;
 
   if (data.object === 'page') {
@@ -43,14 +38,11 @@ router.post('/', function (req, res) {
             
           }else {
             if (event.postback && event.postback.payload) {
-              console.log("ENTROU2", event.postback.payload);
               switch(event.postback.payload){
-                
                 case "clicou_comecar":
                   sendButtonsMessage(event.sender.id);
                   break;
               }
-              
             }
           } 
       });
@@ -65,11 +57,6 @@ function receivedMessage(event) {
   var recipientID = event.recipient.id;
   var timeOfMessage = event.timestamp;
   var message = event.message;
-
-  console.log("Received message for user %d and page %d at %d with message:", 
-    senderID, recipientID, timeOfMessage);
-  console.log(JSON.stringify(message));
-
   var messageId = message.mid;
 
   var messageText = message.text;
@@ -213,14 +200,12 @@ async function getNews(temaTipo, id) {
   const condicao = {tema: new RegExp(temaTipo, "i")};
   let noticias = await Noticia.find(condicao);
   console.log("NOTICIA ", noticias[0]);
-  
-  noticias = checkUrl(noticias);
 
   if (noticias.length == 0) {
 
       
       let quickReply = sendButtonsMessage(id);
-      await sendTextMessage(id, "Sinto muito, mas não temos noticias disponiveis sobre esse tópico, por favor selecione uma das outras categorias abaixo para eu te mostrar noticias sobre elas!");
+      await sendTextMessage(id, "Não temos noticias disponiveis sobre esse tema.");
       callSendAPI(quickReply);
 
        
@@ -237,23 +222,6 @@ async function getNews(temaTipo, id) {
       callSendAPI(carrousel);
   }
 
-}
-
-function checkUrl(news) {
-  let filteredNotices = [];
-
-  news.forEach(notice => {
-          if (!validUrl.isUri(notice.link)) {
-              notice.link = defaultUrl;
-          }
-          if (!validUrl.isUri(notice.image)) {
-              notice.image = defaultImg;
-          }
-          
-      filteredNotices.push(notice);
-  })
-
-  return filteredNotices;
 }
 
 
