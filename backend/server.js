@@ -18,8 +18,6 @@ app.use(express.urlencoded({extended: true}));
 app.use(morgan("dev"));
 app.use(cors());
 
-
-
 express.Router().get('/', (req, res) => {
     return res.json({ status: 'running' });
 });

@@ -19,6 +19,7 @@ router.post('/adicionar', (req, res,) => {
 });
 
 router.get('/listar', (req, res,) => {
+    console.log("ENV: " , process.env.VERIFY_TOKEN);
     Noticia.find({}, (erro, noticias) => {
         if (erro) return res.status(500).send(erro)
         return res.status(200).send(noticias);
